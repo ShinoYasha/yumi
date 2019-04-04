@@ -1,8 +1,8 @@
 import pandas as pd
 import csv
-
+import random
 import numpy as np
-
+import datetime
 
 class HMM(object):
     def __init__(self,N,M):
@@ -98,7 +98,7 @@ class HMM(object):
             for j in range(self.M):
                 self.B[i][j] = randomlist[j]/Sum
 
-    def train(self, O, MaxSteps = 100):
+    def train(self, O, MaxSteps = 5):
         self.T = len(O)
         self.O = O
 
@@ -145,6 +145,7 @@ class HMM(object):
             self.A = tmp_A
             self.B = tmp_B
             self.Pi = tmp_pi
+          #  print(self.A)
 
     def generate(self, length):
         import random
@@ -177,7 +178,6 @@ class HMM(object):
                 ran -= self.B[I[i]][k]
                 k += 1
             Y.append(k)
-        print(Y)
         return Y
 
 
@@ -190,7 +190,7 @@ def triangle(length,b):
     Y = []
 
     for x in X:
-        Y.append(int(b[x]/5000))
+        Y.append(int(b[x] / 100))
     return X,Y
 def triangle2(length):
     '''
@@ -222,7 +222,7 @@ if __name__ == '__main__':
     b = []
     for i in a:
         b.append(i[6])
-    hmm = HMM(10,4)
+    hmm = HMM(10,3660)
     #print(triangle(20))
     tri_x, tri_y = triangle(30, b)
     x,y =triangle2(39)
@@ -231,7 +231,19 @@ if __name__ == '__main__':
    #print(b)
     hmm.train(tri_y)
    # hmm.train(y)
-    y = hmm.generate(100)
-   #print(y)
-    x = [i for i in range(100)]
-    show_data(x,y)
+    y = hmm.generate(365)
+    print(y)
+    # x = [i for i in range(365)]
+    # show_data(x,y)
+    # a = [47, 41, 27, 79, 63, 63, 64, 81, 15, 66, 27, 63, 81, 70, 91, 63, 87, 91, 91, 87, 40, 63, 64, 63, 15, 41, 52, 199, 142, 78, 81, 58, 66, 27, 79, 114, 63, 79, 114, 60, 63, 70, 91, 64, 111, 15, 83, 27, 79, 63, 64, 29, 58, 83, 27, 63, 81, 47, 83, 52, 122, 114, 78, 63, 70, 77, 40, 87, 64, 122, 142, 63, 79, 142, 63, 63, 15, 83, 52, 199, 142, 63, 122, 40, 63, 64, 122, 142, 63, 29, 15, 41, 52, 199, 114, 78, 111, 47, 83, 55, 64, 29, 15, 83, 52, 122, 40, 40, 40, 63, 40, 91, 64, 29, 58, 83, 55, 78, 199, 114, 63, 29, 15, 66, 52, 79, 142, 60, 111, 15, 66, 52, 60, 111, 70, 87, 64, 79, 142, 78, 79, 114, 78, 63, 58, 66, 52, 64, 63, 58, 83, 55, 63, 199, 142, 63, 29, 15, 83, 27, 122, 114, 60, 29, 15, 41, 27, 78, 199, 87, 64, 122, 114, 60, 29, 47, 41, 55, 78, 81, 58, 66, 55, 60, 29, 58, 41, 52, 63, 111, 15, 83, 52, 78, 122, 142, 60, 63, 47, 66, 55, 64, 63, 47, 66, 52, 199, 77, 64, 79, 142, 78, 111, 47, 41, 27, 122, 142, 63, 79, 77, 40, 87, 91, 64, 199, 87, 77, 64, 79, 114, 78, 63, 70, 87, 91, 87, 64, 63, 15, 41, 55, 60, 81, 70, 87, 63, 64, 199, 114, 60, 81, 15, 41, 27, 122, 77, 64, 111, 47, 66, 55, 60, 63, 58, 41, 52, 122, 142, 64, 111, 47, 66, 52, 60, 29, 15, 41, 55, 63, 199, 114, 78, 63, 15, 83, 27, 122, 114, 60, 81, 15, 41, 27, 79, 142, 60, 111, 15, 66, 55, 78, 79, 40, 64, 81, 70, 40, 64, 29, 47, 83, 55, 60, 81, 58, 66, 27, 199, 142, 64, 81, 58, 66, 55, 199, 40, 64, 81, 58, 41, 27, 79, 142, 63, 29, 15, 83, 52, 122, 63, 64, 111, 58, 41, 27, 78, 122, 114, 78, 199, 77, 40, 87, 77, 91, 91, 64, 199, 91, 64, 79, 114, 63, 29]
+    # b = []
+    # begin = datetime.date(2018, 1, 11)
+    # delta = datetime.timedelta(days = 1)
+    # for i in range(len(a)):
+    #     current = {
+    #         'time': begin.strftime("%Y-%m-%d"),
+    #         'sales': a[i] * 100 + random.randint(0, 100)
+    #     }
+    #     b.append(current)
+    #     begin += delta
+    # print(b)

@@ -26,10 +26,18 @@
               <span>生产计划</span>
             </template>
             <el-menu-item-group>
-              <el-menu-item index="2-1">新计划</el-menu-item>
-              <el-menu-item index="2-2">生产中</el-menu-item>
-              <el-menu-item index="2-3">已完成</el-menu-item>
-              <el-menu-item index="2-3">管理</el-menu-item>
+              <el-menu-item index="2-1" @click="query">数据查询</el-menu-item>
+              <el-menu-item index="2-2" @click="plan">制定本年度计划</el-menu-item>
+            </el-menu-item-group>
+          </el-submenu>
+          <el-submenu index="3">
+            <template slot="title">
+              <i class="el-icon-location"></i>
+              <span>生产调度</span>
+            </template>
+            <el-menu-item-group>
+              <el-menu-item index="3-1" @click="seed">播种排产</el-menu-item>
+              <el-menu-item index="3-2" @click="make">加工排产</el-menu-item>
             </el-menu-item-group>
           </el-submenu>
         </el-menu>
@@ -40,6 +48,10 @@
       <upload-csv v-if="showUploadCsv"></upload-csv>
       <data-manage v-if="showDataManage"></data-manage>
       <sale-predict v-if="showSalePredict"></sale-predict>
+      <data-query v-if="showDataQuery"></data-query>
+      <produce-plan v-if="showProducePlan"></produce-plan>
+      <seed-plan v-if="showSeedPlan"></seed-plan>
+      <make-plan v-if="showMakePlan"></make-plan>
     </div>
   </div>
 </template>
@@ -49,14 +61,22 @@ import axios from "axios";
 import UploadCsv from "./components/UploadCsv.vue";
 import DataManage from './components/DataManage.vue'
 import SalePredict from './components/SalePredict.vue'
+import DataQuery from './components/DataQuery.vue'
+import ProducePlan from './components/ProducePlan.vue'
+import SeedPlan from './components/SeedPlan.vue'
+import MakePlan from './components/MakePlan.vue'
 export default {
   name: "App",
-  components: { UploadCsv, DataManage, SalePredict },
+  components: { UploadCsv, DataManage, SalePredict, DataQuery, ProducePlan, SeedPlan, MakePlan },
   data() {
     return {
       showUploadCsv: false,
       showDataManage: false,
       showSalePredict: false,
+      showDataQuery: false,
+      showProducePlan: false,
+      showSeedPlan: false,
+      showMakePlan: false
     };
   },
   methods: {
@@ -69,17 +89,65 @@ export default {
     upload() {
       this.showUploadCsv = true;
       this.showDataManage = false;
-      this.showSalePredict = false
+      this.showSalePredict = false;
+      this.showDataQuery = false
+      this.showProducePlan = false
+      this.showSeedPlan = false
+      this.showMakePlan = false
     },
     manage() {
         this.showUploadCsv = false;
         this.showDataManage = true
         this.showSalePredict = false
+        this.showDataQuery = false
+        this.showProducePlan = false
+        this.showSeedPlan = false
+        this.showMakePlan = false
     },
     predict() {
         this.showUploadCsv = false;
         this.showDataManage = false
         this.showSalePredict = true
+        this.showDataQuery = false
+        this.showProducePlan = false
+        this.showSeedPlan = false
+        this.showMakePlan = false
+    },
+    query() {
+        this.showUploadCsv = false
+        this.showDataManage = false
+        this.showSalePredict = false
+        this.showDataQuery = true
+        this.showProducePlan = false
+        this.showSeedPlan = false
+        this.showMakePlan = false
+    },
+    plan() {
+        this.showUploadCsv = false
+        this.showDataManage = false
+        this.showSalePredict = false
+        this.showDataQuery = false
+        this.showProducePlan = true
+        this.showSeedPlan = false
+        this.showMakePlan = false
+    },
+    seed() {
+        this.showUploadCsv = false
+        this.showDataManage = false
+        this.showSalePredict = false
+        this.showDataQuery = false
+        this.showProducePlan = false
+        this.showSeedPlan = true
+        this.showMakePlan = false 
+    },
+    make() {
+        this.showUploadCsv = false
+        this.showDataManage = false
+        this.showSalePredict = false
+        this.showDataQuery = false
+        this.showProducePlan = false
+        this.showSeedPlan = false
+        this.showMakePlan = true
     }
   },
   mounted() {

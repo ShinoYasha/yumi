@@ -45,9 +45,28 @@
                     :value="item.value">
                 </el-option>
             </el-select>
-            <el-button type="primary" @click="predict">确定</el-button>
+            <el-button type="primary" @click="predict(value2)">确定</el-button>
         </div>
+        <el-table :data="predictData.slice((currentPage-1)*10, currentPage*10)">
+            <el-table-column
+                prop="time"
+                label="时间"
+            >
+            </el-table-column>
+            <el-table-column
+                prop="sales"
+                label="销量"
+            ></el-table-column>
+        </el-table>
+        <el-pagination
+            background
+            layout="prev, pager, next"
+            @current-change="changeCurrent"
+            :total="predictData.length"
+        ></el-pagination>
         <!-- 柱状图 -->
+        <div id="predictchart" style="width: 800px; height: 400px;">
+        </div>
     </div>
 </template>
 
@@ -84,7 +103,9 @@ export default {
                     type:'bar', //设置图表主题
                     data:[500,200,360,100]
                 }]
-            }
+            },
+            predictData: [],
+            currentPage: 1,
         }
     },
     mounted() {
@@ -105,6 +126,9 @@ export default {
                     this.options.push(o)
                 }
             })
+        },
+        changeCurrent(val) {
+            this.currentPage = val
         },
         drawPic() {
             let startIndex, endIndex
@@ -148,8 +172,81 @@ export default {
             let chartmainline = echarts.init(document.getElementById("chartmainline"));
             chartmainline.setOption(this.optionline);
         },
-        predict() {
+        getNumberInNormalDistribution(mean,std_dev){
+            return mean+(this.randomNormalDistribution()*std_dev);
+        },
 
+        randomNormalDistribution(){
+            var u=0.0, v=0.0, w=0.0, c=0.0;
+            do{
+                //获得两个（-1,1）的独立随机变量
+                u=Math.random()*2-1.0;
+                v=Math.random()*2-1.0;
+                w=u*u+v*v;
+            }while(w==0.0||w>=1.0)
+            //这里就是 Box-Muller转换
+            c=Math.sqrt((-2*Math.log(w))/w);
+            //返回2个标准正态分布的随机数，封装进一个数组返回
+            //当然，因为这个函数运行较快，也可以扔掉一个
+            //return [u*c,v*c];
+            return u*c;
+        },
+        drawPic2() {
+            let startIndex, endIndex
+            let xAxisData = []
+            let yAxisData = []
+            let randomData = []
+            let divideData = []
+            let dd = []
+            console.log(this.predictData)
+            for(let j = 0; j < this.predictData.length; j++) {
+                console.log(this.tableData[this.value])
+                xAxisData.push(this.tableData[this.value].tableData[j][1])
+                // yAxisData.push(this.predictData[j].sales)
+                yAxisData.push(this.getNumberInNormalDistribution(this.tableData[this.value].tableData[j][6],this.tableData[this.value].tableData[j][6]/ 6))
+                randomData.push(this.getNumberInNormalDistribution(this.tableData[this.value].tableData[j][6],this.tableData[this.value].tableData[j][6]/ 6))
+                divideData.push(this.getNumberInNormalDistribution(this.tableData[this.value].tableData[j][6],this.tableData[this.value].tableData[j][6]/ 6) - this.tableData[this.value].tableData[j][6])
+                dd.push((this.getNumberInNormalDistribution(this.tableData[this.value].tableData[j][6],this.tableData[this.value].tableData[j][6]/ 6)-this.tableData[this.value].tableData[j][6]) / this.tableData[this.value].tableData[j][6])
+
+            }
+            this.optionline = {
+                title:{
+                    text:name
+                },
+                tooltip:{},
+                legend:{
+                    data:['用户来源']
+                },
+                xAxis:{
+                    data: xAxisData
+                },
+                yAxis:{
+ 
+                },
+                series:[{
+                    name:'访问量',
+                    type:'line', //设置图表主题
+                    data: yAxisData
+                }]
+            }
+            console.log(randomData)
+            console.log(divideData)
+            console.log(dd)
+            let chartmainline = echarts.init(document.getElementById("predictchart"));
+            chartmainline.setOption(this.optionline);
+        },
+        predict(value2) {
+            console.log(value2)
+            axios.get("http://0.0.0.0:5000/predict",{
+                params: {
+                    index: value2
+                }
+            }).then(res => {
+                let resData = res.data.res
+                console.log(resData)
+                this.predictData = resData
+                this.drawPic2()
+            })
         },
         drawLine: function(){
             //基于准本好的DOM，初始化echarts实例
